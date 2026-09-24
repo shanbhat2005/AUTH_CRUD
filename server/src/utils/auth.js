@@ -8,3 +8,10 @@ export const generateTokens=async(id)=>{
     return{accessToken,refreshToken}
 }
 
+export const readRefreshToken=(token)=>{
+return jwt.verify(token,config.REFRESH_TOKEN)
+}
+
+export const readAccessToken=(token)=>{
+    return jwt.verify(token,config.ACCESS_TOKEN)
+}
