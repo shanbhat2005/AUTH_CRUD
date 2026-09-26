@@ -1,0 +1,15 @@
+import express from 'express'
+import validateProduct from '../validators/product.validator.js'
+import { authenticate } from '../middleware/auth.middleware.js'
+import { createProduct, deleteProduct, getProduct, getProducts, updateProduct } from '../controllers/product.controller.js'
+
+const router= express.Router()
+
+router.post('/',authenticate,validateProduct,createProduct)
+router.get("/",getProducts)
+router.get("/:id",getProduct)
+router.put("/:id",authenticate,updateProduct)
+router.delete("/:id",authenticate,deleteProduct)
+
+
+export default router
