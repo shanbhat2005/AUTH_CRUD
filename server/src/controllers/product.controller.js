@@ -18,6 +18,13 @@ res.status(201).json({
     }
 })
 } catch (error) {
+    if (error.name === "ValidationError") {
+        return res.status(400).json({
+            message: "Invalid product data",
+            error: error.message
+        })
+    }
+
     return res.status(500).json({
         message:"internal server error",
         error

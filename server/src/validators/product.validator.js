@@ -8,7 +8,9 @@ const validateProduct=[
     body("description")
     .exists().withMessage("description is required").bail()
     .isString().withMessage("description must be a string").bail()
-    .trim().isLength({min:15}).withMessage("description must contain at least 15 characters").bail(),
+    .trim()
+    .isLength({min:15, max:100})
+    .withMessage("description must be between 15 and 100 characters").bail(),
     body("price")
     .exists().withMessage("price is required").bail()
     .isNumeric().withMessage("price must be a number").bail(),

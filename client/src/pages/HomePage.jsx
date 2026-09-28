@@ -2,18 +2,36 @@
 import { useEffect, useState } from "react";
 import useApi from "../api/axios";
 import ProductCard from "../components/ProductCard";
+import ProductForm from "../components/ProductForm";
 
 const HomePage = () => {
   const api = useApi();
 
   const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
+  const [isForm, setIsForm] = useState(false);
 
-   const handleDelete = async(id) => {
-    await api.delete(`/products/${id}`)
-    const response= await api.get("/products")
-    setProducts(response.data.data.products)
-    
+  const handleDelete = async (id) => {
+    await api.delete(`/products/${id}`);
+    const response = await api.get("/products");
+    setProducts(response.data.data.products);
+  };
+
+  const handleAdd = () => {
+    setIsForm(true);
+  };
+
+  const handleProductSubmit = async (data) => {
+    try {
+      await api.post("/products", data);
+      const response = await api.get("/products");
+      setProducts(response.data.data.products);
+      setIsForm(false);
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Could not create product."
+      );
+    }
   };
 
   useEffect(() => {
@@ -47,6 +65,17 @@ const HomePage = () => {
     );
   }
 
+  if (isForm) {
+    return (
+      <main className="min-h-screen bg-slate-50 px-4 py-10">
+        <ProductForm
+          onCancel={() => setIsForm(false)}
+          onSubmit={handleProductSubmit}
+        />
+      </main>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Hero */}
@@ -67,29 +96,6 @@ const HomePage = () => {
                 everyday style.
               </p>
             </div>
-
-            {/* Search */}
-            <div className="relative w-full md:w-80 lg:w-96">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full rounded-2xl border border-white/20 bg-white/95 px-5 py-4 pl-12 text-sm text-slate-900 shadow-xl outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-4 focus:ring-white/20"
-              />
-
-              <svg
-                className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"
-                />
-              </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -109,10 +115,13 @@ const HomePage = () => {
             </p>
           </div>
 
-          <button className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600">
-            Sort by
+          {/* Add Button */}
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+          >
             <svg
-              className="h-4 w-4"
+              className="h-5 w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -121,9 +130,11 @@ const HomePage = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="m6 9 6 6 6-6"
+                d="M12 4v16m8-8H4"
               />
             </svg>
+
+            Add
           </button>
         </div>
 
