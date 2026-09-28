@@ -3,7 +3,7 @@ import axios from "axios"
 import { AuthContext } from "../context/AuthContext"
 
 export const api= axios.create({
-    baseURL:"http://localhost:5173/api",
+    baseURL: import.meta.env.VITE_API_URL || "/api",
     withCredentials:true,
    
 })
