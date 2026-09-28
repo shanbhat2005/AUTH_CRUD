@@ -2,12 +2,19 @@
 // pages/ProductForm.jsx
 import { useForm } from "react-hook-form";
 
-const ProductForm = ({ onCancel, onSubmit }) => {
+const ProductForm = ({ onCancel, onSubmit, initialData, submitLabel = "Add Product" }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: initialData?.name || "",
+      description: initialData?.description || "",
+      price: initialData?.price ?? "",
+      stock: initialData?.stock ?? "",
+    },
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6">
@@ -229,7 +236,7 @@ const ProductForm = ({ onCancel, onSubmit }) => {
                     d="M12 4v16m8-8H4"
                   />
                 </svg>
-                Add Product
+                {submitLabel}
               </button>
             </div>
           </form>

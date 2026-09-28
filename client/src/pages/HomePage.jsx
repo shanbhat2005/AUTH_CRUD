@@ -1,15 +1,20 @@
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import useApi from "../api/axios";
 import ProductCard from "../components/ProductCard";
 import ProductForm from "../components/ProductForm";
+import { AuthContext } from "../context/AuthContext";
 
 const HomePage = () => {
   const api = useApi();
+  const navigate = useNavigate();
+  const { setUser, setAccessToken } = useContext(AuthContext);
 
   const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
   const [isForm, setIsForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
 
   const handleDelete = async (id) => {
     await api.delete(`/products/${id}`);
@@ -18,18 +23,43 @@ const HomePage = () => {
   };
 
   const handleAdd = () => {
+    setEditingProduct(null);
     setIsForm(true);
+  };
+
+  const handleUpdate = (product) => {
+    setEditingProduct(product);
+    setIsForm(true);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      setUser(null);
+      setAccessToken(null);
+      navigate("/");
+    }
   };
 
   const handleProductSubmit = async (data) => {
     try {
-      await api.post("/products", data);
+      if (editingProduct) {
+        await api.put(`/products/${editingProduct._id}`, data);
+      } else {
+        await api.post("/products", data);
+      }
+
       const response = await api.get("/products");
       setProducts(response.data.data.products);
+      setEditingProduct(null);
       setIsForm(false);
     } catch (error) {
       setError(
-        error.response?.data?.message || "Could not create product."
+        error.response?.data?.message ||
+          (editingProduct
+            ? "Could not update product."
+            : "Could not create product.")
       );
     }
   };
@@ -69,8 +99,13 @@ const HomePage = () => {
     return (
       <main className="min-h-screen bg-slate-50 px-4 py-10">
         <ProductForm
-          onCancel={() => setIsForm(false)}
+          initialData={editingProduct}
+          onCancel={() => {
+            setEditingProduct(null);
+            setIsForm(false);
+          }}
           onSubmit={handleProductSubmit}
+          submitLabel={editingProduct ? "Update Product" : "Add Product"}
         />
       </main>
     );
@@ -96,6 +131,14 @@ const HomePage = () => {
                 everyday style.
               </p>
             </div>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="self-start rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 md:self-auto"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </section>
@@ -174,6 +217,7 @@ const HomePage = () => {
                 key={product._id}
                 product={product}
                 handleDelete={handleDelete}
+                handleUpdate={handleUpdate}
               />
             ))}
           </div>

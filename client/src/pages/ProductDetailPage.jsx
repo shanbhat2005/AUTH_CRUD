@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import useApi from "../api/axios";
+import ProductForm from "../components/ProductForm";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -9,6 +10,7 @@ const ProductDetailPage = () => {
 
   const [product, setProduct] = useState(null);
   const [error, setError] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const getProduct = async () => {
@@ -23,6 +25,16 @@ const ProductDetailPage = () => {
     getProduct();
   }, [api, id]);
 
+  const handleUpdate = async (data) => {
+    try {
+      const response = await api.put(`/products/${id}`, data);
+      setProduct(response.data.data.product);
+      setIsEditing(false);
+    } catch (error) {
+      setError(error.response?.data?.message || "Could not update product.");
+    }
+  };
+
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
@@ -36,6 +48,19 @@ const ProductDetailPage = () => {
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <p className="text-slate-500">Loading product...</p>
       </div>
+    );
+  }
+
+  if (isEditing) {
+    return (
+      <main className="min-h-screen bg-slate-50 px-4 py-10">
+        <ProductForm
+          initialData={product}
+          onCancel={() => setIsEditing(false)}
+          onSubmit={handleUpdate}
+          submitLabel="Update Product"
+        />
+      </main>
     );
   }
 
@@ -57,6 +82,14 @@ const ProductDetailPage = () => {
           <h1 className="text-3xl font-bold text-slate-900">
             {product.name}
           </h1>
+
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            className="mt-4 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
+          >
+            Update Product
+          </button>
 
           <p className="mt-4 leading-7 text-slate-500">
             {product.description}
@@ -84,12 +117,6 @@ const ProductDetailPage = () => {
             </div>
           </div>
 
-          <button
-            disabled={product.stock === 0}
-            className="mt-7 w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-          >
-            {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
-          </button>
         </div>
       </div>
     </main>

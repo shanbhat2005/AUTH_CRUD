@@ -1,15 +1,11 @@
 
 import { Link, useNavigate } from "react-router";
 
-const ProductCard = ({ product,handleDelete }) => {
+const ProductCard = ({ product, handleDelete, handleUpdate }) => {
   const navigate = useNavigate();
   const totalStock = product.stock ?? 0;
 
  
-
-  const handleUpdate = () => {
-    navigate(`/main/products/${product._id}/update`);
-  };
 
   return (
     <div className="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl">
@@ -100,7 +96,7 @@ const ProductCard = ({ product,handleDelete }) => {
         {/* Update */}
         <button
           type="button"
-          onClick={handleUpdate}
+          onClick={() => handleUpdate(product)}
           className="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2.5 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-100"
         >
           Update

@@ -8,7 +8,7 @@ const router= express.Router()
 router.post('/',authenticate,validateProduct,createProduct)
 router.get("/",getProducts)
 router.get("/:id",getProduct)
-router.put("/:id",authenticate,updateProduct)
+router.put("/:id",authenticate,validateProduct,updateProduct)
 router.delete("/:id",authenticate,deleteProduct)
 
 

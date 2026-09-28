@@ -86,7 +86,7 @@ export const updateProduct=async(req,res)=>{
             description,
             stock,
             price
-        },{new:true})
+        },{new:true, runValidators:true})
 
         if(!product){
             return res.status(404).json({

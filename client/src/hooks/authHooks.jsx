@@ -7,7 +7,7 @@ import { AuthContext } from '../context/AuthContext'
 
 
 export const useAuth=()=>{
-    const { handleSubmit, reset, register, formState: { errors } } = useForm()
+    const { handleSubmit, reset, register, setError, formState: { errors } } = useForm()
     const api = useApi()
     const navigate=useNavigate()
     const {setUser,setAccessToken}= useContext(AuthContext)
@@ -23,12 +23,16 @@ const handleRegister = async(data) => {
 }
 
 const handleLogin = async(data) => {
-    
-    const response= await api.post("/auth/login",data)
-    setUser(response.data.data.user)
-    setAccessToken(response.data.data.accessToken)
-    console.log(data);
-    
+    try {
+        const response= await api.post("/auth/login",data)
+        setUser(response.data.data.user)
+        setAccessToken(response.data.data.accessToken)
+    } catch (error) {
+        setError("root", {
+            type: "server",
+            message: error.response?.data?.message || "Could not log in"
+        })
+    }
 
 
 }

@@ -75,6 +75,12 @@ const Login = () => {
             )}
           </div>
 
+          {errors.root && (
+            <p className="text-center text-red-500 text-sm">
+              {errors.root.message}
+            </p>
+          )}
+
           {/* Login Button */}
           <button
             type="submit"

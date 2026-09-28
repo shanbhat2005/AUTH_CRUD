@@ -141,6 +141,28 @@ try {
     
 }
 
+export const logout=async(req,res)=>{
+    try {
+        const refreshToken=req.cookies.refreshToken
+
+        if(refreshToken){
+            await User.findOneAndUpdate(
+                {refreshToken},
+                {refreshToken:null}
+            )
+        }
+
+        res.clearCookie("refreshToken")
+        return res.status(200).json({
+            message:"User logged out successfully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:"internal server error"
+        })
+    }
+}
+
 export const getMe=async(req,res)=>{
     const {id}= req.user
     const user= await User.findById(id)
